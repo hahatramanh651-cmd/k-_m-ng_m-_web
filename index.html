@@ -1,0 +1,285 @@
+from pathlib import Path
+
+html = r'''<!DOCTYPE html>
+<html lang="vi">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="theme-color" content="#f7d8e8">
+<title>Kẻ Mộng Mơ — Dreamy Study Space</title>
+<style>
+:root{
+  --bg:#fff9fc; --bg2:#f7f1ff; --surface:rgba(255,255,255,.78);
+  --surface2:#fff; --text:#40384a; --muted:#8b8195; --primary:#e9a9c7;
+  --secondary:#bcaee9; --accent:#9ecfe7; --cream:#fff0d5;
+  --success:#9ed9a3; --warning:#f3ce73; --danger:#ef9a98;
+  --border:rgba(115,91,130,.12); --shadow:0 18px 50px rgba(110,82,130,.13);
+  --radius:24px; --sidebar:270px;
+}
+[data-theme="night"]{
+  --bg:#111527; --bg2:#1b1933; --surface:rgba(29,31,55,.82);
+  --surface2:#20233d; --text:#f3eefa; --muted:#aaa2bb; --primary:#d99fbd;
+  --secondary:#a99bdd; --accent:#8dbdd2; --cream:#e8d4aa;
+  --border:rgba(255,255,255,.09); --shadow:0 18px 55px rgba(0,0,0,.32);
+}
+*{box-sizing:border-box}
+html{scroll-behavior:smooth}
+body{margin:0;font-family:Inter,ui-sans-serif,system-ui,-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;color:var(--text);background:
+radial-gradient(circle at 15% 15%,rgba(248,191,216,.30),transparent 28%),
+radial-gradient(circle at 85% 20%,rgba(191,221,245,.32),transparent 28%),
+linear-gradient(135deg,var(--bg),var(--bg2));min-height:100vh;overflow-x:hidden}
+button,input,textarea,select{font:inherit}
+button{cursor:pointer;border:0}
+.hidden{display:none!important}
+.fade{animation:fade .45s ease both}
+@keyframes fade{from{opacity:0;transform:translateY(12px)}to{opacity:1;transform:none}}
+@keyframes float{0%,100%{transform:translateY(0) rotate(-3deg)}50%{transform:translateY(-18px) rotate(4deg)}}
+@keyframes drift{0%{transform:translate(0,0)}50%{transform:translate(25px,-15px)}100%{transform:translate(0,0)}}
+@keyframes pop{0%{transform:scale(.75);opacity:0}100%{transform:scale(1);opacity:1}}
+@keyframes glow{0%,100%{box-shadow:0 0 0 rgba(233,169,199,0)}50%{box-shadow:0 0 28px rgba(233,169,199,.35)}}
+@keyframes confetti{0%{transform:translateY(-30px) rotate(0);opacity:1}100%{transform:translateY(240px) rotate(540deg);opacity:0}}
+
+.decor{position:fixed;inset:0;pointer-events:none;z-index:0;overflow:hidden}
+.decor span{position:absolute;font-size:24px;opacity:.6;animation:float 7s ease-in-out infinite}
+.decor .b1{left:5%;top:18%}.decor .b2{right:7%;top:27%;animation-delay:1s}.decor .b3{left:12%;bottom:15%;animation-delay:2s}
+.decor .f1{right:13%;bottom:10%;animation-delay:1.5s}.decor .f2{left:42%;top:8%;animation-delay:3s}.decor .s1{right:35%;top:18%;animation:drift 9s infinite}
+.decor .s2{left:28%;bottom:9%;animation:drift 11s infinite}
+.decor .cloud{font-size:45px;opacity:.22;animation:drift 13s ease-in-out infinite}
+
+#welcome{min-height:100vh;display:grid;place-items:center;padding:35px 18px;position:relative;z-index:2}
+.welcome-wrap{width:min(760px,100%);text-align:center}
+.kicker{font-size:13px;letter-spacing:4px;text-transform:uppercase;color:var(--muted);margin-bottom:18px}
+.envelope-stage{perspective:1200px;margin:auto;width:min(600px,94vw);min-height:480px;display:grid;place-items:center}
+.envelope{width:min(430px,88vw);height:285px;position:relative;filter:drop-shadow(0 28px 30px rgba(95,65,105,.18));transition:.6s}
+.env-back,.env-front{position:absolute;inset:0;border-radius:18px;background:linear-gradient(135deg,#f6c9dc,#e7d4f8);border:1px solid rgba(255,255,255,.7)}
+.env-back{z-index:1}
+.env-paper{position:absolute;left:7%;right:7%;bottom:7%;height:86%;background:#fffdf8;border-radius:12px;z-index:2;padding:28px;box-shadow:0 10px 30px rgba(75,50,80,.14);transition:1s cubic-bezier(.2,.8,.2,1);overflow:auto;text-align:left}
+.env-paper h1{font-family:Georgia,serif;text-align:center;margin:10px 0 8px;font-size:38px;color:#765c86}
+.env-paper .tag{text-align:center;color:#9b829f;font-style:italic;margin-bottom:24px}
+.env-front{z-index:4;clip-path:polygon(0 18%,50% 62%,100% 18%,100% 100%,0 100%);background:linear-gradient(135deg,#eeb7d1,#cfc2ef)}
+.env-flap{position:absolute;inset:0;z-index:5;clip-path:polygon(0 0,100% 0,50% 57%);background:linear-gradient(135deg,#f6c5da,#c9bdf0);transform-origin:top;transition:1s cubic-bezier(.2,.8,.2,1);backface-visibility:hidden;border-radius:18px}
+.seal{position:absolute;z-index:6;left:50%;top:53%;transform:translate(-50%,-50%);width:70px;height:70px;border-radius:50%;display:grid;place-items:center;background:#d989ad;color:#fff;font-size:28px;box-shadow:0 8px 20px rgba(120,65,100,.2);transition:.6s}
+.envelope.open .env-flap{transform:rotateX(175deg)}
+.envelope.open .seal{opacity:0;transform:translate(-50%,-50%) scale(.5)}
+.envelope.open .env-paper{transform:translateY(-125px);height:105%;z-index:7}
+.open-btn{margin-top:10px;padding:14px 26px;border-radius:999px;background:linear-gradient(135deg,#efb3ce,#c9b9ef);color:#fff;font-weight:800;box-shadow:0 12px 30px rgba(190,130,180,.25);animation:glow 2.8s infinite}
+.letter-scroll{max-height:440px;overflow:auto;padding-right:8px;scrollbar-width:thin}
+.letter-scroll p{line-height:1.85;font-size:16px;color:#5f5366}
+.start-btn{display:block;margin:28px auto 5px;padding:15px 28px;border-radius:999px;background:linear-gradient(135deg,#e9a5c6,#b9ace9);color:white;font-weight:800;font-size:16px;box-shadow:0 12px 30px rgba(160,120,190,.25);transition:.2s}
+.start-btn:hover{transform:translateY(-3px);box-shadow:0 16px 34px rgba(160,120,190,.34)}
+
+#app{position:relative;z-index:2;min-height:100vh}
+.sidebar{position:fixed;left:18px;top:18px;bottom:18px;width:var(--sidebar);background:var(--surface);backdrop-filter:blur(20px);border:1px solid var(--border);border-radius:28px;box-shadow:var(--shadow);padding:18px;display:flex;flex-direction:column;z-index:20;transition:.35s}
+.sidebar.collapsed{width:78px}
+.brand{display:flex;align-items:center;gap:12px;padding:8px 7px 20px;font-weight:900}
+.brand .moon{width:43px;height:43px;border-radius:15px;display:grid;place-items:center;background:linear-gradient(135deg,#efb8d1,#bbb0e8);font-size:22px;flex:none}
+.brand-text{white-space:nowrap;overflow:hidden}
+.sidebar.collapsed .brand-text,.sidebar.collapsed .nav-label,.sidebar.collapsed .user-info{display:none}
+.nav{display:flex;flex-direction:column;gap:7px;overflow:auto}
+.nav button{background:transparent;color:var(--text);display:flex;align-items:center;gap:13px;padding:12px 13px;border-radius:15px;text-align:left;transition:.2s}
+.nav button:hover,.nav button.active{background:linear-gradient(90deg,rgba(233,169,199,.22),rgba(188,174,233,.18));transform:translateX(2px)}
+.nav-icon{width:23px;text-align:center;flex:none}
+.collapse{margin-top:auto;padding:10px;border-radius:14px;background:rgba(255,255,255,.22);color:var(--text)}
+.user-mini{display:flex;align-items:center;gap:10px;margin:10px 0;padding:10px;border-top:1px solid var(--border)}
+.avatar{width:38px;height:38px;border-radius:50%;display:grid;place-items:center;background:linear-gradient(135deg,#efbad3,#bcb0eb);color:white;font-weight:900;flex:none}
+.main{margin-left:306px;padding:28px 32px 60px;transition:.35s}
+.main.expanded{margin-left:110px}
+.topbar{display:flex;align-items:center;justify-content:space-between;gap:15px;margin-bottom:24px}
+.page-title h1{margin:0;font-size:30px}.page-title p{margin:6px 0 0;color:var(--muted)}
+.actions{display:flex;gap:9px;align-items:center}
+.icon-btn,.soft-btn{background:var(--surface);border:1px solid var(--border);color:var(--text);padding:11px 13px;border-radius:14px;box-shadow:0 8px 25px rgba(90,65,100,.07)}
+.icon-btn:hover,.soft-btn:hover{transform:translateY(-2px)}
+.grid{display:grid;grid-template-columns:repeat(12,1fr);gap:18px}
+.card{grid-column:span 4;background:var(--surface);border:1px solid var(--border);backdrop-filter:blur(18px);border-radius:var(--radius);box-shadow:var(--shadow);padding:21px}
+.card.wide{grid-column:span 8}.card.full{grid-column:1/-1}.card h3{margin:0 0 10px}.muted{color:var(--muted)}
+.greeting{min-height:190px;background:linear-gradient(135deg,rgba(255,226,238,.8),rgba(225,218,255,.72));position:relative;overflow:hidden}
+[data-theme="night"] .greeting{background:linear-gradient(135deg,rgba(77,52,76,.8),rgba(51,50,87,.8))}
+.greeting .big{font-size:38px;font-family:Georgia,serif;margin:12px 0}
+.greeting .emoji{position:absolute;right:25px;bottom:15px;font-size:90px;opacity:.65;animation:float 5s infinite}
+.stat{display:flex;justify-content:space-between;align-items:center}.stat strong{font-size:30px}
+.progress{height:9px;background:rgba(130,100,145,.12);border-radius:20px;overflow:hidden;margin-top:12px}.progress i{display:block;height:100%;width:62%;background:linear-gradient(90deg,var(--primary),var(--secondary));border-radius:20px}
+.list{display:flex;flex-direction:column;gap:10px}.list-item{display:flex;align-items:center;justify-content:space-between;gap:12px;padding:13px;border-radius:16px;background:rgba(130,100,145,.06)}
+.badge{padding:5px 9px;border-radius:999px;font-size:12px;background:rgba(188,174,233,.22)}
+.empty{text-align:center;padding:30px;color:var(--muted)}
+.search{width:100%;padding:14px 16px;border:1px solid var(--border);background:var(--surface2);color:var(--text);border-radius:16px;outline:none}
+.search:focus,input:focus,textarea:focus,select:focus{border-color:var(--secondary);box-shadow:0 0 0 4px rgba(188,174,233,.12)}
+.toolbar{display:flex;gap:10px;flex-wrap:wrap;margin-bottom:16px}
+.primary{padding:11px 16px;border-radius:14px;background:linear-gradient(135deg,#e8a5c5,#b8aae8);color:#fff;font-weight:800}
+.danger{background:rgba(239,154,152,.15);color:#b45d5b}
+.tabs{display:flex;gap:8px;flex-wrap:wrap;margin-bottom:18px}.tab{padding:10px 14px;border-radius:999px;background:rgba(130,100,145,.08);color:var(--text)}.tab.active{background:linear-gradient(135deg,rgba(233,169,199,.45),rgba(188,174,233,.4));font-weight:800}
+.note-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(210px,1fr));gap:14px}.note{padding:18px;border-radius:20px;background:var(--surface2);border:1px solid var(--border);min-height:155px;box-shadow:0 8px 25px rgba(80,60,90,.06);transition:.2s}.note:hover{transform:translateY(-3px)}.note h4{margin:0 0 8px}.note p{color:var(--muted);white-space:pre-wrap;max-height:82px;overflow:hidden}.note-footer{display:flex;justify-content:space-between;color:var(--muted);font-size:12px;margin-top:12px}
+.subject-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:16px}.subject{padding:24px;border-radius:23px;min-height:160px;background:linear-gradient(135deg,rgba(255,255,255,.75),rgba(255,235,244,.55));border:1px solid var(--border);cursor:pointer;transition:.25s}.subject:hover{transform:translateY(-5px) rotate(-.4deg);box-shadow:var(--shadow)}[data-theme="night"] .subject{background:linear-gradient(135deg,rgba(45,47,72,.8),rgba(61,47,69,.7))}
+.subject .ico{font-size:38px}.subject h3{margin:10px 0 4px}
+.schedule{display:grid;grid-template-columns:repeat(7,minmax(140px,1fr));gap:10px;overflow:auto}.day{background:var(--surface2);border:1px solid var(--border);border-radius:18px;padding:12px;min-height:250px}.day h4{margin:2px 0 10px}.slot{padding:10px;border-radius:13px;background:rgba(188,174,233,.13);margin-bottom:8px;font-size:13px}
+.calculator{position:fixed;right:25px;bottom:25px;width:285px;background:var(--surface);backdrop-filter:blur(20px);border:1px solid var(--border);border-radius:23px;box-shadow:0 25px 60px rgba(45,35,60,.25);z-index:50;overflow:hidden}
+.calc-head{display:flex;justify-content:space-between;align-items:center;padding:12px 14px;border-bottom:1px solid var(--border);cursor:move}.calc-display{padding:16px;font-size:28px;text-align:right;min-height:70px;word-break:break-all}.calc-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:7px;padding:10px}.calc-grid button{padding:14px;border-radius:13px;background:rgba(130,100,145,.08);color:var(--text)}.calc-grid button:hover{background:rgba(233,169,199,.25)}
+.modal-backdrop{position:fixed;inset:0;background:rgba(25,20,35,.38);backdrop-filter:blur(8px);z-index:100;display:grid;place-items:center;padding:18px}.modal{width:min(560px,100%);max-height:90vh;overflow:auto;background:var(--surface2);color:var(--text);border:1px solid var(--border);border-radius:26px;box-shadow:0 30px 90px rgba(20,15,30,.3);padding:24px;animation:pop .25s ease}.modal h2{margin-top:0}.form{display:grid;gap:12px}.form label{font-size:13px;color:var(--muted)}.form input,.form textarea,.form select{width:100%;padding:13px 14px;border:1px solid var(--border);background:var(--surface);color:var(--text);border-radius:14px;outline:none}.form textarea{min-height:150px;resize:vertical}.modal-actions{display:flex;justify-content:flex-end;gap:9px;margin-top:18px}
+.toast-wrap{position:fixed;right:20px;top:20px;z-index:200;display:flex;flex-direction:column;gap:10px}.toast{padding:14px 17px;background:var(--surface2);border:1px solid var(--border);box-shadow:var(--shadow);border-radius:16px;animation:fade .35s ease;max-width:340px}
+.confetti{position:fixed;top:-20px;width:8px;height:16px;border-radius:2px;z-index:250;animation:confetti 2.5s ease-in forwards}
+.theme-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:12px}.theme-card{border:2px solid transparent;border-radius:18px;padding:16px;cursor:pointer;background:var(--surface);border-color:var(--border)}.theme-card.active{border-color:var(--primary)}.theme-preview{height:70px;border-radius:13px;margin-bottom:10px}
+@media(max-width:1000px){.sidebar{left:10px;top:10px;bottom:10px}.main{margin-left:102px;padding:20px}.card{grid-column:span 6}.card.wide{grid-column:span 12}.subject-grid{grid-template-columns:1fr 1fr}.schedule{grid-template-columns:repeat(7,170px)}}
+@media(max-width:700px){.sidebar{width:0;padding:0;left:0;top:0;bottom:0;border:0;border-radius:0;background:transparent;box-shadow:none;overflow:visible}.sidebar.open{width:275px;padding:18px;background:var(--surface);border:1px solid var(--border);border-radius:0 24px 24px 0}.sidebar:not(.open) .nav,.sidebar:not(.open) .brand,.sidebar:not(.open) .user-mini,.sidebar:not(.open) .collapse{display:none}.main,.main.expanded{margin-left:0;padding:16px}.mobile-menu{display:block!important}.card,.card.wide{grid-column:1/-1}.subject-grid{grid-template-columns:1fr}.greeting .big{font-size:28px}.calculator{width:260px;right:12px;bottom:12px}.theme-grid{grid-template-columns:1fr 1fr}}
+.mobile-menu{display:none}
+</style>
+</head>
+<body>
+<div class="decor" aria-hidden="true">
+  <span class="b1">🦋</span><span class="b2">🦋</span><span class="b3">🦋</span>
+  <span class="f1">🌸</span><span class="f2">🌷</span><span class="s1">✦</span><span class="s2">✧</span>
+  <span class="cloud" style="left:18%;top:48%">☁️</span><span class="cloud" style="right:18%;top:68%">☁️</span>
+</div>
+
+<section id="welcome">
+  <div class="welcome-wrap">
+    <div class="kicker">a little place for dreamers</div>
+    <div class="envelope-stage">
+      <div class="envelope" id="envelope">
+        <div class="env-back"></div>
+        <div class="env-paper">
+          <div class="letter-scroll">
+            <div style="text-align:center;font-size:28px">🌙</div>
+            <h1>Kẻ Mộng Mơ</h1>
+            <div class="tag">Hãy bước đến nơi những kẻ mộng mơ trên con đường mộng tưởng.</div>
+            <p><b>Chào mừng bạn đã tới đây!</b></p>
+            <p>Khi bạn tới đây thì mình chắc chắn rằng bạn chính là một trong những kẻ mộng mơ, là một kẻ vẫn còn đang tìm kiếm những thành công, hoàn thành những giấc mơ, đang đi trên con đường mộng tưởng nơi mà chỉ có bạn mới có thể biết mình đang ra sao, mình đang cần gì nhưng vẫn còn mông lung về con đường phía trước.</p>
+            <p>Đó chính là lí do vì sao đây là nơi của những kẻ mộng mơ.</p>
+            <p>Và khi đến đây, việc bạn mộng mơ, mơ tưởng quá mức không có gì là kì lạ cả vì ở đây chúng mình là như thế.</p>
+            <p>Vì đối với chúng mình, mộng mơ là một phần dẫn đến thành công. Thế nên mình mong bạn hãy mộng mơ nếu có thể.</p>
+            <p>Chúc bạn học tốt và thành công trên con đường của mình.</p>
+            <p>Hãy tận hưởng nhé! ✨</p>
+            <button class="start-btn" id="startBtn">✨ Hãy bắt đầu nào →</button>
+          </div>
+        </div>
+        <div class="env-flap"></div><div class="env-front"></div><div class="seal">♡</div>
+      </div>
+    </div>
+    <button class="open-btn" id="openLetter">💌 Mở thư</button>
+    <p class="muted" style="margin-top:14px">Một nơi nhỏ dành cho học tập, ghi chú và những giấc mơ.</p>
+  </div>
+</section>
+
+<section id="app" class="hidden">
+  <aside class="sidebar" id="sidebar">
+    <div class="brand"><div class="moon">🌙</div><div class="brand-text">Kẻ Mộng Mơ</div></div>
+    <nav class="nav" id="nav">
+      <button data-page="home" class="active"><span class="nav-icon">🏡</span><span class="nav-label">Trang chủ</span></button>
+      <button data-page="account"><span class="nav-icon">👤</span><span class="nav-label">Tài khoản</span></button>
+      <button data-page="settings"><span class="nav-icon">⚙️</span><span class="nav-label">Cài đặt</span></button>
+      <button data-page="themes"><span class="nav-icon">🎨</span><span class="nav-label">Giao diện</span></button>
+      <button data-page="notes"><span class="nav-icon">📝</span><span class="nav-label">Ghi chú</span></button>
+      <button data-page="reminders"><span class="nav-icon">🔔</span><span class="nav-label">Nhắc nhở</span></button>
+      <button data-page="schedule"><span class="nav-icon">📅</span><span class="nav-label">Thời gian biểu</span></button>
+      <hr style="width:100%;border:0;border-top:1px solid var(--border)">
+      <button data-page="english"><span class="nav-icon">🇬🇧</span><span class="nav-label">Tiếng Anh</span></button>
+      <button data-page="literature"><span class="nav-icon">📖</span><span class="nav-label">Ngữ Văn</span></button>
+      <button data-page="math"><span class="nav-icon">➗</span><span class="nav-label">Toán</span></button>
+    </nav>
+    <div class="user-mini">
+      <div class="avatar" id="avatar">K</div><div class="user-info"><b id="userName">Khách mộng mơ</b><small class="muted" id="userEmail">Chưa đăng nhập</small></div>
+    </div>
+    <button class="collapse" id="collapse">☰ <span class="nav-label">Thu gọn thanh bên</span></button>
+  </aside>
+
+  <main class="main" id="main">
+    <button class="icon-btn mobile-menu" id="mobileMenu">☰</button>
+    <div id="content"></div>
+  </main>
+</section>
+
+<div id="modalRoot"></div>
+<div class="toast-wrap" id="toasts"></div>
+
+<div class="calculator hidden" id="calculator">
+  <div class="calc-head"><b>🧮 Máy tính</b><button class="icon-btn" id="minCalc">−</button></div>
+  <div class="calc-display" id="calcDisplay">0</div>
+  <div class="calc-grid">
+    <button onclick="calcClear()">C</button><button onclick="calcInput('(')">(</button><button onclick="calcInput(')')">)</button><button onclick="calcInput('/')">÷</button>
+    <button onclick="calcInput('7')">7</button><button onclick="calcInput('8')">8</button><button onclick="calcInput('9')">9</button><button onclick="calcInput('*')">×</button>
+    <button onclick="calcInput('4')">4</button><button onclick="calcInput('5')">5</button><button onclick="calcInput('6')">6</button><button onclick="calcInput('-')">−</button>
+    <button onclick="calcInput('1')">1</button><button onclick="calcInput('2')">2</button><button onclick="calcInput('3')">3</button><button onclick="calcInput('+')">+</button>
+    <button onclick="calcInput('0')" style="grid-column:span 2">0</button><button onclick="calcInput('.')">.</button><button onclick="calcEqual()">=</button>
+  </div>
+</div>
+
+<script>
+const $=s=>document.querySelector(s);
+const $$=s=>document.querySelectorAll(s);
+const KEY='ke-mong-mo-v1';
+const state=JSON.parse(localStorage.getItem(KEY)||'null')||{
+  user:null, theme:'sakura', mode:'light', notes:[], reminders:[], schedule:[],
+  english:{vocab:[],grammar:[],links:[]}, literature:{theory:[],practice:[],samples:[],links:[]},
+  math:{formulas:[],exercises:[],links:[]}, calc:'', calcOpen:false
+};
+function save(){localStorage.setItem(KEY,JSON.stringify(state))}
+function toast(msg){const t=document.createElement('div');t.className='toast';t.textContent=msg;$('#toasts').appendChild(t);setTimeout(()=>t.remove(),3200)}
+function esc(s){return String(s??'').replace(/[&<>"']/g,m=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#039;'}[m]))}
+function today(){return new Date().toLocaleDateString('vi-VN')}
+function applyTheme(){document.documentElement.dataset.theme=state.mode==='dark'?'night':'';document.body.dataset.theme=state.theme;save()}
+function pageTitle(title,sub=''){return `<div class="topbar"><div class="page-title"><h1>${title}</h1><p>${sub}</p></div><div class="actions"><button class="icon-btn" onclick="showPage('notes')">🔍</button><button class="icon-btn" onclick="showPage('settings')">⚙️</button></div></div>`}
+function showPage(page){
+  $$('.nav button').forEach(b=>b.classList.toggle('active',b.dataset.page===page));
+  const c=$('#content'); let html='';
+  if(page==='home') html=home();
+  if(page==='account') html=account();
+  if(page==='settings') html=settings();
+  if(page==='themes') html=themes();
+  if(page==='notes') html=notesPage();
+  if(page==='reminders') html=remindersPage();
+  if(page==='schedule') html=schedulePage();
+  if(page==='english') html=subjectPage('english');
+  if(page==='literature') html=subjectPage('literature');
+  if(page==='math') html=subjectPage('math');
+  c.innerHTML=`<div class="fade">${html}</div>`;
+  if(page==='math' && state.calcOpen) $('#calculator').classList.remove('hidden');
+}
+function home(){
+  const name=state.user?.name||'kẻ mộng mơ';
+  const upcoming=[...state.reminders].sort((a,b)=>(a.time||'').localeCompare(b.time||'')).slice(0,3);
+  return pageTitle('Trang chủ','Chào mừng bạn trở lại với căn phòng nhỏ của riêng mình 🌷')+
+  `<div class="grid">
+    <section class="card wide greeting"><div class="muted">Hôm nay</div><div class="big">Chào ${esc(name)} ✨</div><div>Hôm nay chúng ta sẽ mơ điều gì?</div><div class="emoji">🦋</div></section>
+    <section class="card"><div class="stat"><div><div class="muted">Ghi chú</div><strong>${state.notes.length}</strong></div><span>📝</span></div><div class="progress"><i style="width:${Math.min(100,state.notes.length*10)}%"></i></div></section>
+    <section class="card"><div class="stat"><div><div class="muted">Nhắc nhở</div><strong>${state.reminders.length}</strong></div><span>🔔</span></div><p class="muted">Những điều bạn không muốn quên.</p></section>
+    <section class="card"><h3>📚 Góc học tập</h3><div class="subject-grid">
+      <div class="subject" onclick="showPage('english')"><div class="ico">🇬🇧</div><h3>Tiếng Anh</h3><span class="muted">Từ vựng · Ngữ pháp · Link</span></div>
+      <div class="subject" onclick="showPage('literature')"><div class="ico">📖</div><h3>Ngữ Văn</h3><span class="muted">Lý thuyết · Thực hành · Bài mẫu</span></div>
+      <div class="subject" onclick="showPage('math')"><div class="ico">➗</div><h3>Toán</h3><span class="muted">Công thức · Luyện tập · Máy tính</span></div>
+    </div></section>
+    <section class="card wide"><h3>🔔 Sắp tới</h3>${upcoming.length?`<div class="list">${upcoming.map(r=>`<div class="list-item"><span>🌷 <b>${esc(r.title)}</b><br><small class="muted">${esc(r.date)} · ${esc(r.time)}</small></span><span class="badge">${esc(r.priority||'Bình thường')}</span></div>`).join('')}</div>`:`<div class="empty">Chưa có lời nhắc nào. Một ngày đẹp để bắt đầu 🌙</div>`}</section>
+  </div>`;
+}
+function account(){
+  return pageTitle('Tài khoản','Quản lý thông tin và phiên đăng nhập')+
+  `<div class="grid"><section class="card wide"><h3>👤 Thông tin tài khoản</h3>
+  ${state.user?`<div class="list"><div class="list-item"><span>Họ tên</span><b>${esc(state.user.name)}</b></div><div class="list-item"><span>Email</span><b>${esc(state.user.email)}</b></div><div class="list-item"><span>Mật khẩu</span><b>••••••••</b></div></div>
+  <div class="modal-actions"><button class="soft-btn" onclick="changePassword()">🔐 Đổi mật khẩu</button><button class="soft-btn danger" onclick="logout()">Đăng xuất</button></div>`
+  :`<div class="empty">Bạn chưa đăng nhập.</div><div style="text-align:center"><button class="primary" onclick="authModal()">👤 Đăng nhập / Đăng ký</button></div>`}
+  </section></div>`;
+}
+function settings(){
+  return pageTitle('Cài đặt','Tạo một không gian phù hợp với bạn')+
+  `<div class="grid"><section class="card"><h3>🌙 Chế độ</h3><div class="toolbar"><button class="soft-btn" onclick="setMode('light')">☀️ Sáng</button><button class="soft-btn" onclick="setMode('dark')">🌙 Tối</button></div><p class="muted">Chế độ được lưu trên thiết bị.</p></section>
+  <section class="card"><h3>🔐 Tài khoản bảo mật</h3><p class="muted">Thông tin tài khoản và thay đổi mật khẩu được quản lý tại đây.</p><button class="primary" onclick="state.user?changePassword():authModal()">Mở tài khoản bảo mật</button></section>
+  <section class="card"><h3>🎨 Cá nhân hóa</h3><p class="muted">Chọn một thế giới mộng mơ khác.</p><button class="primary" onclick="showPage('themes')">Xem giao diện</button></section></div>`;
+}
+const themesData=[
+ ['sakura','🌸 Sakura Dream','#fff1f6','#eeb5cf'],['moon','🌙 Moonlight','#171a32','#a99bdd'],['cloud','☁️ Cloudy Dream','#eef8ff','#9ecfe7'],
+ ['lavender','🪻 Lavender Garden','#f6f0ff','#bcaee9'],['spring','🌷 Spring Garden','#effbf3','#9ed9a3'],['strawberry','🍓 Strawberry Milk','#fff1f4','#f0a8b9'],
+ ['butterfly','🦋 Butterfly Dream','#eef4ff','#aab8ed'],['starry','🌌 Starry Night','#15162b','#8576bd'],['sweet','🍰 Sweet Dream','#fff6e8','#efc28d'],['forest','🌿 Forest Dream','#eef8f0','#91c9a5']
+];
+function themes(){return pageTitle('Giao diện','Chọn một thế giới nhỏ để học và mơ')+
+`<section class="card full"><div class="theme-grid">${themesData.map(t=>`<div class="theme-card ${state.theme===t[0]?'active':''}" onclick="setTheme('${t[0]}')"><div class="theme-preview" style="background:linear-gradient(135deg,${t[2]},${t[3]})"></div><b>${t[1]}</b><div class="muted" style="font-size:12px;margin-top:5px">Light + Dark ready</div></div>`).join('')}</div></section>`}
+function notesPage(){
+ return pageTitle('Ghi chú','Lưu lại những điều bạn không muốn quên')+
+ `<section class="card full"><div class="toolbar"><input class="search" id="noteSearch" placeholder="🔍 Tìm kiếm ghi chú..." oninput="renderNoteResults()"><button class="primary" onclick="noteModal()">＋ Ghi chú mới</button></div><div id="noteResults" class="note-grid"></div></section>`;
+}
+function renderNoteResults(){
+ const q=($('#noteSearch')?.value||'').toLowerCase(); const arr=state.notes.filter(n=>(n.title+' '+n.body+' '+(n.tag||'')).toLowerCase().includes(q));
+ $('#noteResults').innerHTML=arr.length?arr.map(n=>`<article class="note"><h4>${esc(n.title)}</h4><p>${esc(n.body)}</p><div class="note-footer"><span>${esc(n.tag||'Ghi chú')} · ${esc(n.date)}</span><span><button class="icon-btn" onclick="noteModal('${n.id}')">✏️</button> <button class="icon-btn" onclick="deleteNote('${n.id}')">🗑️</button></span></div></article>`).join(''):`<div class="empty" style="grid-column:1/-1">Chưa có ghi chú phù hợp 🌷</div>`;
+}
+function noteModal(id=''){
+ const n=state.notes.find(x=>x.id===id)||{title:'',body:'',tag:''};
+ openModal(`<h2>${id?'✏️ Chỉnh sửa ghi chú':'📝 Ghi chú mới'}</h2><div class="form">
+ <label>Tiêu đề<input id="fTitle" value="${esc(n.title)}" maxlength="100"></label>
+ <label>Nội dung<textarea id="fBody">${esc(n.body)}</textarea></label>
+ <label>Tag<input id="fTag" value="${esc(n.tag
